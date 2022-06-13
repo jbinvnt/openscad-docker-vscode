@@ -4,7 +4,7 @@ services:
     build:
       context: .
       args:
-        JOBS: 12
+        JOBS: ${JOBS}
         BUILD_TYPE: ${BUILD_TYPE}
         DEBUG: ${DEBUG}
     command: gdbserver 0.0.0.0:2000 /openscad/build/openscad

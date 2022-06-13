@@ -17,6 +17,7 @@ Create a `.env` file in the repository root with the contents:
 ```
 BUILD_TYPE=Debug
 DEBUG=+
+JOBS=<put the number of threads you want to build with>
 ```
 
 Then create the directory `openscad/build`.
