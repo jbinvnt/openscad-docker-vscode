@@ -41,7 +41,7 @@
         },
         {
             "label": "delay-docker-up",
-            "command": "sleep 9",
+            "command": "sleep 9", // Magic number that allows Docker time to start. Change as needed
             "type": "shell",
             "dependsOn": "docker-copy",
             "presentation": {
