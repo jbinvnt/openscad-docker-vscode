@@ -1,0 +1,97 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "docker-up",
+            "command": "docker-compose",
+            "args": [
+                "up",
+                "-d",
+                "--build"
+            ],
+            "type": "shell",
+            "isBackground": false,
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false,
+                "revealProblems": "onProblem"
+            }
+        },
+        {
+            "label": "docker-copy",
+            "command": "./copy-binary-from-container.sh",
+            "type": "shell",
+            "dependsOn": "docker-up",
+            "isBackground": false,
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false,
+                "revealProblems": "onProblem"
+            }
+        },
+        {
+            "label": "delay-docker-up",
+            "command": "sleep 9",
+            "type": "shell",
+            "dependsOn": "docker-copy",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false,
+                "revealProblems": "onProblem"
+            }
+        },
+        {
+            "label": "docker-stop",
+            "command": "docker-compose",
+            "args": [
+                "stop" // using the down command will delete the logs
+            ],
+            "type": "shell",
+            "isBackground": true,
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false,
+                "revealProblems": "onProblem"
+            }
+        },
+        {
+            "label": "docker-logs",
+            "command": "docker-compose",
+            "args": [
+                "logs"
+            ],
+            "type": "shell",
+            "isBackground": false,
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false,
+                "revealProblems": "onProblem"
+            },
+            "dependsOn": "docker-stop" // must stop the container before showing logs
+        }
+    ]
+}

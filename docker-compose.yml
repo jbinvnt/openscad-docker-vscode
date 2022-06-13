@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  openscad:
+    build:
+      context: .
+      args:
+        JOBS: 12
+        BUILD_TYPE: ${BUILD_TYPE}
+        DEBUG: ${DEBUG}
+    command: gdbserver 0.0.0.0:2000 /openscad/build/openscad
+    ports:
+      - "2000:2000"
+    volumes:
+      - ${HOME}/.Xauthority:/root/.Xauthority
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      - DISPLAY=${DISPLAY}
+    network_mode: "host"
+    privileged: true

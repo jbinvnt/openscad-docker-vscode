@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        { // Adapted from https://github.com/tttapa/VSCode-Docker-Cpp
+            "name": "Launch C++ Docker Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/openscad/build/openscad",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "filterStderr": true,
+            "filterStdout": true,
+            "preLaunchTask": "delay-docker-up",
+            "miDebuggerServerAddress": "localhost:2000",
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}
