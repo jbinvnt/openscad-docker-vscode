@@ -68,6 +68,8 @@ RUN apt-get install -y gdbserver
 
 RUN apt-get clean
 
+RUN mkdir -p /root/.local/share/OpenSCAD/backups
+
 WORKDIR /openscad
 
 COPY --from=builder /openscad .
