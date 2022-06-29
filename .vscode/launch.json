@@ -1,29 +1,36 @@
 {
     "configurations": [
-        { // Adapted from https://github.com/tttapa/VSCode-Docker-Cpp
+        { // Adapted from https://github.com/andyneff/hello-world-gdb/blob/master/.vscode/launch.json
             "name": "Launch C++ Docker Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/openscad/build/openscad",
-            "args": [],
+            "program": "/openscad/build/openscad",
+            "args": [
+                "--debug=all"
+            ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "/",
             "environment": [],
             "externalConsole": false,
             "filterStderr": true,
             "filterStdout": true,
-            "preLaunchTask": "delay-docker-up",
-            "miDebuggerServerAddress": "localhost:2000",
+            "preLaunchTask": "docker-copy",
+            "pipeTransport": {
+                "pipeCwd": "${workspaceRoot}",
+                "pipeProgram": "docker",
+                "pipeArgs": [
+                    "exec",
+                    "-i",
+                    "openscad_local_development",
+                    "sh",
+                    "-c"
+                ],
+                "debuggerPath": "stdbuf -i0 -o0 -e0 /usr/bin/gdb -ix /root/.gdbinit"
+            },
+            "sourceFileMap": {
+                    "/openscad/src":"${workspaceRoot}/openscad/src"
+            },
             "MIMode": "gdb",
-            "miDebuggerPath": "gdb",
-            "miDebuggerArgs": "-ix .gdbinit",
-            "logging": {
-                "moduleLoad": false
-            },
-            "symbolLoadInfo": {
-                "loadAll": false,
-                "exceptionList": ""
-            },
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",

@@ -20,11 +20,16 @@
                 "showReuseMessage": false,
                 "clear": false,
                 "revealProblems": "onProblem"
+            },
+            "options": {
+                "env": {
+                    "VSCODE_DRIVEN": "true"
+                }
             }
         },
         {
-            "label": "delay-docker-copy",
-            "command": "sleep 3",
+            "label": "delay-start", // This task pauses long enough for Docker to start the container.
+            "command": "sleep 3", // Can be hand-adjusted depending on how quickly Docker starts.
             "type": "shell",
             "dependsOn": "docker-up",
             "presentation": {
@@ -41,24 +46,9 @@
             "label": "docker-copy",
             "command": "./copy-binary-from-container.sh",
             "type": "shell",
-            "dependsOn": "delay-docker-copy",
+            "dependsOn": "delay-start",
             "isBackground": false,
             "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "silent",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": false,
-                "clear": false,
-                "revealProblems": "onProblem"
-            }
-        },
-        {
-            "label": "delay-docker-up",
-            "command": "sleep 5",
-            "type": "shell",
-            "dependsOn": "docker-copy",
             "presentation": {
                 "echo": true,
                 "reveal": "silent",

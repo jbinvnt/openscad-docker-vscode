@@ -7,14 +7,12 @@ services:
         JOBS: 12
         BUILD_TYPE: ${BUILD_TYPE}
         DEBUG: ${DEBUG}
-    command: bash -c "gdbserver 0.0.0.0:2000 /openscad/build/openscad --debug=all 2>&1"
-    ports:
-      - "2000:2000"
+    command: ./startup.sh
     volumes:
       - ${HOME}/.Xauthority:/root/.Xauthority
       - /tmp/.X11-unix:/tmp/.X11-unix
     environment:
       - DISPLAY=${DISPLAY}
-    network_mode: "host"
+      - VSCODE_DRIVEN=${VSCODE_DRIVEN}
     privileged: true
     container_name: openscad_local_development

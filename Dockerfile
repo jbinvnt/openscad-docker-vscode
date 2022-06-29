@@ -53,7 +53,7 @@ RUN mkdir build && \
 
 FROM debian:bookworm-slim
 
-RUN apt-get update
+RUN apt-get -y update
 
 RUN apt-get -y full-upgrade
 
@@ -64,12 +64,20 @@ RUN apt-get install -y --no-install-recommends \
 	libqt5multimedia5 libqt5concurrent5 libglu1-mesa \
 	libglew2.2 xvfb xauth
 
-RUN apt-get install -y gdbserver
+RUN apt-get install -y gdb
 
 RUN apt-get clean
 
 RUN mkdir -p /root/.local/share/OpenSCAD/backups
 
-WORKDIR /openscad
+WORKDIR /root
+COPY .gdbinit .
 
-COPY --from=builder /openscad .
+WORKDIR /openscad
+COPY startup.sh .
+RUN chmod +x startup.sh
+
+COPY --from=builder /openscad/src ./src
+WORKDIR build
+COPY --from=builder /openscad/build/openscad .
+WORKDIR /openscad
