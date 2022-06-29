@@ -9,13 +9,21 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": true,
+            "externalConsole": false,
             "filterStderr": true,
             "filterStdout": true,
             "preLaunchTask": "delay-docker-up",
             "miDebuggerServerAddress": "localhost:2000",
             "MIMode": "gdb",
             "miDebuggerPath": "gdb",
+            "miDebuggerArgs": "-ix .gdbinit",
+            "logging": {
+                "moduleLoad": false
+            },
+            "symbolLoadInfo": {
+                "loadAll": false,
+                "exceptionList": ""
+            },
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",

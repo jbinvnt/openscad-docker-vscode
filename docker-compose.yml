@@ -4,10 +4,10 @@ services:
     build:
       context: .
       args:
-        JOBS: ${JOBS}
+        JOBS: 12
         BUILD_TYPE: ${BUILD_TYPE}
         DEBUG: ${DEBUG}
-    command: gdbserver 0.0.0.0:2000 /openscad/build/openscad
+    command: bash -c "gdbserver 0.0.0.0:2000 /openscad/build/openscad --debug=all 2>&1"
     ports:
       - "2000:2000"
     volumes:
@@ -17,3 +17,4 @@ services:
       - DISPLAY=${DISPLAY}
     network_mode: "host"
     privileged: true
+    container_name: openscad_local_development

@@ -23,10 +23,25 @@
             }
         },
         {
+            "label": "delay-docker-copy",
+            "command": "sleep 3",
+            "type": "shell",
+            "dependsOn": "docker-up",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false,
+                "revealProblems": "onProblem"
+            }
+        },
+        {
             "label": "docker-copy",
             "command": "./copy-binary-from-container.sh",
             "type": "shell",
-            "dependsOn": "docker-up",
+            "dependsOn": "delay-docker-copy",
             "isBackground": false,
             "group": "build",
             "presentation": {
@@ -41,7 +56,7 @@
         },
         {
             "label": "delay-docker-up",
-            "command": "sleep 9", // Magic number that allows Docker time to start. Change as needed
+            "command": "sleep 5",
             "type": "shell",
             "dependsOn": "docker-copy",
             "presentation": {
