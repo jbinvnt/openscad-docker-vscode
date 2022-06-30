@@ -64,7 +64,7 @@ RUN apt-get install -y --no-install-recommends \
 	libqt5multimedia5 libqt5concurrent5 libglu1-mesa \
 	libglew2.2 xvfb xauth
 
-RUN apt-get install -y gdb
+RUN apt-get install -y gdb xterm
 
 RUN apt-get clean
 
@@ -77,7 +77,4 @@ WORKDIR /openscad
 COPY startup.sh .
 RUN chmod +x startup.sh
 
-COPY --from=builder /openscad/src ./src
-WORKDIR build
-COPY --from=builder /openscad/build/openscad .
-WORKDIR /openscad
+COPY --from=builder /openscad .

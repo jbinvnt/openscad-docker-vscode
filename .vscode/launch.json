@@ -6,15 +6,16 @@
             "request": "launch",
             "program": "/openscad/build/openscad",
             "args": [
-                "--debug=all"
+                "--debug=all",
+                "1>>/openscad/output.log",
+                "2>>/openscad/output.log"
             ],
             "stopAtEntry": false,
-            "cwd": "/",
+            "cwd": "/openscad",
             "environment": [],
             "externalConsole": false,
-            "filterStderr": true,
-            "filterStdout": true,
             "preLaunchTask": "docker-copy",
+            "postDebugTask": "docker-logs",
             "pipeTransport": {
                 "pipeCwd": "${workspaceRoot}",
                 "pipeProgram": "docker",
