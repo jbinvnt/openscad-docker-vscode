@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.2
 # Adapted from https://github.com/openscad/docker-openscad/blob/main/openscad/bookworm/Dockerfile
 FROM debian:bookworm-slim AS builder
 
@@ -39,9 +40,9 @@ COPY openscad .
 
 RUN git submodule update --init
 RUN echo "Build type: ${BUILD_TYPE}"
-RUN mkdir build && \
-	cd build && \
-	cmake .. \
+RUN mkdir -p /built-executable
+WORKDIR build
+RUN --mount=type=cache,target=/openscad/build cmake .. \
 		-DCMAKE_INSTALL_PREFIX=/usr/local \
 		-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
 		-DEXPERIMENTAL=${SNAPSHOT} \
@@ -49,7 +50,9 @@ RUN mkdir build && \
 		-DOPENSCAD_VERSION="$OPENSCAD_VERSION" \
 		-DOPENSCAD_COMMIT="$OPENSCAD_COMMIT" \
 		&& \
-	make -j"$JOBS"
+	make -j"$JOBS" \
+	    && \
+	cp openscad /built-executable
 
 FROM debian:bookworm-slim
 
@@ -78,3 +81,4 @@ COPY startup.sh .
 RUN chmod +x startup.sh
 
 COPY --from=builder /openscad .
+COPY --from=builder /built-executable/openscad ./build

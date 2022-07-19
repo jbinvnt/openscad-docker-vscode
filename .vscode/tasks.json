@@ -23,7 +23,9 @@
             },
             "options": {
                 "env": {
-                    "VSCODE_DRIVEN": "true"
+                    "VSCODE_DRIVEN": "true",
+                    "DOCKER_BUILDKIT": "1",
+                    "COMPOSE_DOCKER_CLI_BUILD": "1"
                 }
             }
         },
