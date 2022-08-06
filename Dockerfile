@@ -40,7 +40,7 @@ COPY openscad .
 
 RUN git submodule update --init
 RUN echo "Build type: ${BUILD_TYPE}"
-RUN mkdir -p /built-executable
+RUN mkdir -p /build-results
 WORKDIR build
 RUN --mount=type=cache,target=/openscad/build cmake .. \
 		-DCMAKE_INSTALL_PREFIX=/usr/local \
@@ -52,9 +52,9 @@ RUN --mount=type=cache,target=/openscad/build cmake .. \
 		&& \
 	make -j"$JOBS" \
 	    && \
-	cp openscad /built-executable
+	cp -r . /build-results
 
-FROM debian:bookworm-slim
+FROM debian:bookworm-slim AS runtime
 
 RUN apt-get -y update
 
@@ -81,4 +81,13 @@ COPY startup.sh .
 RUN chmod +x startup.sh
 
 COPY --from=builder /openscad .
-COPY --from=builder /built-executable/openscad ./build
+COPY --from=builder /build-results/openscad ./build
+
+FROM runtime AS ctest
+
+RUN apt-get -y update
+RUN apt-get install -y cmake python3
+RUN apt-get install -y imagemagick
+
+COPY --from=builder /build-results/ ./build
+WORKDIR ./build/tests
