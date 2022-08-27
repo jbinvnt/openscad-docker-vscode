@@ -1,20 +1,17 @@
 # syntax=docker/dockerfile:1.2
 # Adapted from https://github.com/openscad/docker-openscad/blob/main/openscad/bookworm/Dockerfile
-FROM debian:bookworm-slim AS builder
 
-ARG GITHUB_USER=openscad
-ARG GITHUB_REPO=openscad
-ARG BRANCH=master
-ARG REFS=heads
-ARG OPENSCAD_VERSION=
-ARG BUILD_TYPE=Release
-ARG SNAPSHOT=ON
-ARG JOBS=1
-ARG COMMIT=true
+FROM debian:bookworm-slim AS debian-base
 
-ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get -y update
+RUN apt-get -y upgrade
 
-RUN apt-get update && apt-get -y full-upgrade
+# Builder's version must match runtime
+RUN apt-get -y install libc6
+
+FROM debian-base AS builder
+
+RUN apt-get -y update
 
 # Base setup
 RUN \
@@ -34,14 +31,20 @@ RUN \
 	qtmultimedia5-dev libqt5multimedia5-plugins \
 	libglew-dev
 
-RUN apt-get -y update
-RUN apt-get -y install libc6
-
 WORKDIR /openscad
 
 COPY openscad .
 
 RUN git submodule update --init
+ARG GITHUB_USER=openscad
+ARG GITHUB_REPO=openscad
+ARG BRANCH=master
+ARG REFS=heads
+ARG OPENSCAD_VERSION=
+ARG BUILD_TYPE=Release
+ARG SNAPSHOT=ON
+ARG JOBS=1
+ARG COMMIT=true
 RUN echo "Build type: ${BUILD_TYPE}"
 RUN mkdir -p /build-results
 WORKDIR build
@@ -57,11 +60,9 @@ RUN --mount=type=cache,target=/openscad/build cmake .. \
 	    && \
 	cp -r . /build-results
 
-FROM debian:bookworm-slim AS runtime-base
+FROM debian-base AS runtime-base
 
 RUN apt-get -y update
-
-RUN apt-get -y full-upgrade
 
 RUN apt-get install -y --no-install-recommends \
 	libcairo2 libdouble-conversion3 libxml2 lib3mf1 libzip4 libharfbuzz0b \
@@ -71,11 +72,6 @@ RUN apt-get install -y --no-install-recommends \
 	libglew2.2 xvfb xauth
 
 RUN apt-get install -y gdb xterm
-
-RUN apt-get -y upgrade
-
-RUN apt-get -y update
-RUN apt-get -y install libc6
 
 RUN apt-get clean
 
@@ -96,11 +92,9 @@ COPY --from=builder /build-results/openscad ./build
 FROM runtime-base AS ctest
 
 RUN apt-get -y update
-RUN apt-get install -y cmake python3
-RUN apt-get install -y imagemagick
+RUN apt-get install -y cmake python3 imagemagick
 
 WORKDIR /openscad
 COPY --from=builder /openscad .
-COPY --from=builder /build-results/openscad ./build
 COPY --from=builder /build-results/ ./build
 WORKDIR ./build/tests
