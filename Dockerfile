@@ -34,6 +34,9 @@ RUN \
 	qtmultimedia5-dev libqt5multimedia5-plugins \
 	libglew-dev
 
+RUN apt-get -y update
+RUN apt-get -y install libc6
+
 WORKDIR /openscad
 
 COPY openscad .
@@ -54,7 +57,7 @@ RUN --mount=type=cache,target=/openscad/build cmake .. \
 	    && \
 	cp -r . /build-results
 
-FROM debian:bookworm-slim AS runtime
+FROM debian:bookworm-slim AS runtime-base
 
 RUN apt-get -y update
 
@@ -69,7 +72,14 @@ RUN apt-get install -y --no-install-recommends \
 
 RUN apt-get install -y gdb xterm
 
+RUN apt-get -y upgrade
+
+RUN apt-get -y update
+RUN apt-get -y install libc6
+
 RUN apt-get clean
+
+FROM runtime-base as runtime
 
 RUN mkdir -p /root/.local/share/OpenSCAD/backups
 
@@ -83,11 +93,14 @@ RUN chmod +x startup.sh
 COPY --from=builder /openscad .
 COPY --from=builder /build-results/openscad ./build
 
-FROM runtime AS ctest
+FROM runtime-base AS ctest
 
 RUN apt-get -y update
 RUN apt-get install -y cmake python3
 RUN apt-get install -y imagemagick
 
+WORKDIR /openscad
+COPY --from=builder /openscad .
+COPY --from=builder /build-results/openscad ./build
 COPY --from=builder /build-results/ ./build
 WORKDIR ./build/tests
