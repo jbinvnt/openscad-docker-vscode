@@ -3,7 +3,7 @@
 
 FROM debian:bookworm-slim AS debian-base
 
-RUN apt-get -y update
+RUN apt-get update -y
 RUN apt-get -y upgrade
 
 # Builder's version must match runtime
@@ -55,6 +55,7 @@ RUN --mount=type=cache,target=/openscad/build cmake .. \
 		-DSNAPSHOT=${SNAPSHOT} \
 		-DOPENSCAD_VERSION="$OPENSCAD_VERSION" \
 		-DOPENSCAD_COMMIT="$OPENSCAD_COMMIT" \
+		-DCOMPARATOR="--comparator=ncc" \
 		&& \
 	make -j"$JOBS" \
 	    && \

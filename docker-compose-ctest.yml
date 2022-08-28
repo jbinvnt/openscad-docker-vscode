@@ -2,4 +2,4 @@ services:
   openscad:
     build:
       target: ctest
-    command: /bin/bash -c 'ctest -C Examples -j"$JOBS"; bash'
+    command: /bin/bash -c 'ctest -E nef3_broken -j"$JOBS"; bash'
