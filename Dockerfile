@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.2
 # Adapted from https://github.com/openscad/docker-openscad/blob/main/openscad/bookworm/Dockerfile
 
-FROM debian:bookworm-slim AS debian-base
+FROM debian:bullseye-slim AS debian-base
 
 # Builder's libc6 version must match runtime
 RUN apt-get -y update && apt-get -y upgrade && apt-get -y install libc6
@@ -28,6 +28,9 @@ RUN apt-get -y update && \
 
 FROM builder-deps as builder
 
+RUN /bin/bash -c "ln -s /usr/lib/x86_64-linux-gnu/libGL.so /usr/lib/x86_64-linux-gnu/libOpenGL.so"
+RUN /bin/bash -c "ln -s /usr/lib/libqscintilla2_qt5.so /usr/lib/x86_64-linux-gnu/libqscintilla2_qt5.so"
+RUN /bin/bash -c "ln -s /bin/sh /usr/bin/sh"
 
 WORKDIR /openscad
 
