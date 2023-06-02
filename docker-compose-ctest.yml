@@ -2,4 +2,6 @@ services:
   openscad:
     build:
       target: ctest
-    command: /bin/bash -c 'ctest -E nef3_broken -j"$JOBS"; bash'
+    environment:
+      - TEST_JOBS=${TEST_JOBS}
+    command: /bin/bash -c 'ctest -E nef3_broken -j"$TEST_JOBS"; bash'

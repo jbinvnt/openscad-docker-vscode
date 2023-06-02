@@ -3,23 +3,18 @@
 
 FROM debian:bookworm-slim AS debian-base
 
-RUN apt-get update -y
-RUN apt-get -y upgrade
+# Builder's libc6 version must match runtime
+RUN apt-get -y update && apt-get -y upgrade && apt-get -y install libc6
 
-# Builder's version must match runtime
-RUN apt-get -y install libc6
-
-FROM debian-base AS builder
-
-RUN apt-get -y update
+FROM debian-base AS builder-deps
 
 # Base setup
-RUN \
+RUN apt-get -y update && \
 	apt-get install -y --no-install-recommends \
 	build-essential devscripts apt-utils apt-transport-https ca-certificates git wget jq
 
 # Dev dependencies
-RUN \
+RUN apt-get -y update && \
 	apt-get -y install --no-install-recommends \
 	build-essential curl libffi-dev  libxmu-dev cmake bison flex \
 	git-core libboost-all-dev libmpfr-dev libboost-dev \
@@ -55,7 +50,6 @@ RUN --mount=type=cache,target=/openscad/build cmake .. \
 		-DSNAPSHOT=${SNAPSHOT} \
 		-DOPENSCAD_VERSION="$OPENSCAD_VERSION" \
 		-DOPENSCAD_COMMIT="$OPENSCAD_COMMIT" \
-		-DCOMPARATOR="--comparator=ncc" \
 		&& \
 	make -j"$JOBS" \
 	    && \
@@ -63,16 +57,14 @@ RUN --mount=type=cache,target=/openscad/build cmake .. \
 
 FROM debian-base AS runtime-base
 
-RUN apt-get -y update
-
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	libcairo2 libdouble-conversion3 libxml2 lib3mf1 libzip4 libharfbuzz0b \
 	libboost-thread1.74.0 libboost-program-options1.74.0 libboost-filesystem1.74.0 \
 	libboost-regex1.74.0 libopencsg1 libmpfr6 libqscintilla2-qt5-15 \
 	libqt5multimedia5 libqt5concurrent5 libglu1-mesa \
-	libglew2.2 xvfb xauth
+	libglew2.1 xvfb xauth
 
-RUN apt-get install -y gdb xterm
+RUN apt-get -y update && apt-get install -y gdb xterm
 
 RUN apt-get clean
 
@@ -92,8 +84,7 @@ COPY --from=builder /build-results/openscad ./build
 
 FROM runtime-base AS ctest
 
-RUN apt-get -y update
-RUN apt-get install -y cmake python3 imagemagick
+RUN apt-get -y update && apt-get install -y cmake python3 imagemagick
 
 WORKDIR /openscad
 COPY --from=builder /openscad .
