@@ -26,6 +26,9 @@ RUN apt-get -y update && \
 	qtmultimedia5-dev libqt5multimedia5-plugins \
 	libglew-dev
 
+FROM builder-deps as builder
+
+
 WORKDIR /openscad
 
 COPY openscad .
