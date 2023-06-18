@@ -26,9 +26,12 @@ RUN apt-get -y update && \
 	qtmultimedia5-dev libqt5multimedia5-plugins \
 	libglew-dev
 
+RUN apt-get -y update && apt-get -y install libtbb-dev python3-pip python3-venv
+RUN apt-get -y update && apt-get -y install freeglut3 freeglut3-dev
+
 FROM builder-deps as builder
 
-RUN /bin/bash -c "ln -s /usr/lib/x86_64-linux-gnu/libGL.so /usr/lib/x86_64-linux-gnu/libOpenGL.so"
+#RUN /bin/bash -c "ln -s /usr/lib/x86_64-linux-gnu/libGL.so /usr/lib/x86_64-linux-gnu/libOpenGL.so"
 RUN /bin/bash -c "ln -s /usr/lib/libqscintilla2_qt5.so /usr/lib/x86_64-linux-gnu/libqscintilla2_qt5.so"
 RUN /bin/bash -c "ln -s /bin/sh /usr/bin/sh"
 
@@ -36,7 +39,7 @@ WORKDIR /openscad
 
 COPY openscad .
 
-RUN git submodule update --init
+RUN git submodule update --init --recursive
 ARG GITHUB_USER=openscad
 ARG GITHUB_REPO=openscad
 ARG BRANCH=master
@@ -71,6 +74,9 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	libglew2.1 xvfb xauth
 
 RUN apt-get -y update && apt-get install -y gdb xterm
+
+RUN apt-get -y update && apt-get -y install freeglut3 freeglut3-dev
+RUN apt-get -y update && apt-get -y install libtbb-dev
 
 RUN apt-get clean
 
