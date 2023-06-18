@@ -22,18 +22,18 @@ RUN apt-get -y update && \
 	libgmp-dev imagemagick libfreetype6-dev libdouble-conversion-dev \
 	gtk-doc-tools libglib2.0-dev gettext pkg-config ragel libxi-dev \
 	libfontconfig-dev libzip-dev lib3mf-dev libharfbuzz-dev libxml2-dev \
-	qtbase5-dev libqt5scintilla2-dev libqt5opengl5-dev libqt5svg5-dev \
+	qtbase5-dev libqt5opengl5-dev libqt5svg5-dev \
 	qtmultimedia5-dev libqt5multimedia5-plugins \
-	libglew-dev
+	libglew-dev \
+    libtbb-dev python3-pip python3-venv freeglut3-dev
 
-RUN apt-get -y update && apt-get -y install libtbb-dev python3-pip python3-venv
-RUN apt-get -y update && apt-get -y install freeglut3 freeglut3-dev
+WORKDIR /dependencies
+RUN apt-get -y update && apt-get install -y libqscintilla2-qt5-dev
 
 FROM builder-deps as builder
 
-#RUN /bin/bash -c "ln -s /usr/lib/x86_64-linux-gnu/libGL.so /usr/lib/x86_64-linux-gnu/libOpenGL.so"
-RUN /bin/bash -c "ln -s /usr/lib/libqscintilla2_qt5.so /usr/lib/x86_64-linux-gnu/libqscintilla2_qt5.so"
 RUN /bin/bash -c "ln -s /bin/sh /usr/bin/sh"
+RUN /bin/bash -c "ln -s /usr/lib/libqscintilla2_qt5.so /usr/lib/x86_64-linux-gnu/libqscintilla2_qt5.so"
 
 WORKDIR /openscad
 
@@ -71,12 +71,7 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	libboost-thread1.74.0 libboost-program-options1.74.0 libboost-filesystem1.74.0 \
 	libboost-regex1.74.0 libopencsg1 libmpfr6 libqscintilla2-qt5-15 \
 	libqt5multimedia5 libqt5concurrent5 libglu1-mesa \
-	libglew2.1 xvfb xauth
-
-RUN apt-get -y update && apt-get install -y gdb xterm
-
-RUN apt-get -y update && apt-get -y install freeglut3 freeglut3-dev
-RUN apt-get -y update && apt-get -y install libtbb-dev
+	libglew2.1 xvfb xauth gdb xterm freeglut3-dev libtbb-dev
 
 RUN apt-get clean
 
