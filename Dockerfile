@@ -47,7 +47,7 @@ ARG COMMIT=true
 RUN echo "Build type: ${BUILD_TYPE}"
 RUN mkdir -p /build-results
 WORKDIR build
-RUN --mount=type=cache,mode=0755,target=/openscad/build cmake .. \
+RUN cmake .. \
 		-DCMAKE_INSTALL_PREFIX=/usr/local \
 		-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
 		-DEXPERIMENTAL=${SNAPSHOT} \
