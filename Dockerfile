@@ -22,24 +22,19 @@ RUN apt-get -y update && \
 	libgmp-dev imagemagick libfreetype6-dev libdouble-conversion-dev \
 	gtk-doc-tools libglib2.0-dev gettext pkg-config ragel libxi-dev \
 	libfontconfig-dev libzip-dev lib3mf-dev libharfbuzz-dev libxml2-dev \
-	qtbase5-dev libqt5opengl5-dev libqt5svg5-dev \
-	qtmultimedia5-dev libqt5multimedia5-plugins \
-	libglew-dev \
-    libtbb-dev python3-pip python3-venv freeglut3-dev
-
-WORKDIR /dependencies
-RUN apt-get -y update && apt-get install -y libqscintilla2-qt5-dev
+	qtbase5-dev libqscintilla2-qt5-dev libqt5opengl5-dev libqt5svg5-dev \
+	qtmultimedia5-dev libqt5multimedia5-plugins libtbb-dev \
+	python3-pip python3-venv libglew-dev freeglut3-dev \
+	&& apt-get clean
 
 FROM builder-deps as builder
 
-RUN /bin/bash -c "ln -s /bin/sh /usr/bin/sh"
-RUN /bin/bash -c "ln -s /usr/lib/libqscintilla2_qt5.so /usr/lib/x86_64-linux-gnu/libqscintilla2_qt5.so"
-
 WORKDIR /openscad
+# If submodules/ was instead copied, as before, then each build they'd need to be re-fetched. A risk with this approach is a mismatch with contents on GitHub
+RUN git clone https://github.com/jbinvnt/openscad.git && cd openscad && git submodule update --init --recursive && mv submodules .. && cd .. && rm -r openscad/
 
 COPY openscad .
 
-RUN git submodule update --init --recursive
 ARG GITHUB_USER=openscad
 ARG GITHUB_REPO=openscad
 ARG BRANCH=master
@@ -52,7 +47,7 @@ ARG COMMIT=true
 RUN echo "Build type: ${BUILD_TYPE}"
 RUN mkdir -p /build-results
 WORKDIR build
-RUN --mount=type=cache,target=/openscad/build cmake .. \
+RUN --mount=type=cache,mode=0755,target=/openscad/build cmake .. \
 		-DCMAKE_INSTALL_PREFIX=/usr/local \
 		-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
 		-DEXPERIMENTAL=${SNAPSHOT} \
@@ -71,9 +66,8 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	libboost-thread1.74.0 libboost-program-options1.74.0 libboost-filesystem1.74.0 \
 	libboost-regex1.74.0 libopencsg1 libmpfr6 libqscintilla2-qt5-15 \
 	libqt5multimedia5 libqt5concurrent5 libglu1-mesa \
-	libglew2.1 xvfb xauth gdb xterm freeglut3-dev libtbb-dev
-
-RUN apt-get clean
+	libglew2.1 xvfb xauth gdb xterm freeglut3-dev libtbb-dev \
+	&& apt-get clean
 
 FROM runtime-base as runtime
 
@@ -91,7 +85,7 @@ COPY --from=builder /build-results/openscad ./build
 
 FROM runtime-base AS ctest
 
-RUN apt-get -y update && apt-get install -y cmake python3 imagemagick
+RUN apt-get -y update && apt-get install -y cmake python3 imagemagick && apt-get clean
 
 WORKDIR /openscad
 COPY --from=builder /openscad .
