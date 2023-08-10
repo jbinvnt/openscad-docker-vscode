@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.2
 # Adapted from https://github.com/openscad/docker-openscad/blob/main/openscad/bookworm/Dockerfile
 
-FROM debian:bookworm-slim AS debian-base
+FROM debian:bullseye-slim AS debian-base
 
 # Builder's libc6 version must match runtime
 RUN apt-get -y update && apt-get -y upgrade && apt-get -y install libc6
@@ -66,7 +66,7 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	libboost-thread1.74.0 libboost-program-options1.74.0 libboost-filesystem1.74.0 \
 	libboost-regex1.74.0 libopencsg1 libmpfr6 libqscintilla2-qt5-15 \
 	libqt5multimedia5 libqt5concurrent5 libglu1-mesa \
-	libglew2.2 xvfb xauth gdb xterm \
+	libglew2.1 xvfb xauth gdb xterm \
 	libtbb-dev \
 	&& apt-get clean
 
