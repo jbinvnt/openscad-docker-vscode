@@ -1,3 +1,4 @@
 openscad/built-executable/
 openscad/.git
-submodules/
+openscad/submodules/
+openscad/libraries/

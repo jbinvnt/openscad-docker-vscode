@@ -1,25 +1,17 @@
 version: "3.9"
 services:
   openscad:
-    runtime: nvidia
     build:
       context: .
       args:
         JOBS: ${JOBS}
         BUILD_TYPE: ${BUILD_TYPE}
         DEBUG: ${DEBUG}
-      #target: builder
       target: runtime
     command: ./startup.sh
     volumes:
       - ${HOME}/.Xauthority:/root/.Xauthority
       - /tmp/.X11-unix:/tmp/.X11-unix
-    devices:
-      - "/dev/nvidia0:/dev/nvidia0"
-      - "/dev/nvidiactl:/dev/nvidiactl"
-      - "/dev/nvidia-modeset:/dev/nvidia-modeset"
-      - "/dev/nvidia-uvm:/dev/nvidia-uvm"
-      - "/dev/nvidia-uvm-tools:/dev/nvidia-uvm-tools"
     environment:
       - DISPLAY=${DISPLAY}
       - VSCODE_DRIVEN=${VSCODE_DRIVEN}

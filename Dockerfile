@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.2
 # Adapted from https://github.com/openscad/docker-openscad/blob/main/openscad/bookworm/Dockerfile
 
-FROM debian:bullseye-slim AS debian-base
+FROM debian:bookworm-slim AS debian-base
 
 # Builder's libc6 version must match runtime
 RUN apt-get -y update && apt-get -y upgrade && apt-get -y install libc6
@@ -22,17 +22,17 @@ RUN apt-get -y update && \
 	libgmp-dev imagemagick libfreetype6-dev libdouble-conversion-dev \
 	gtk-doc-tools libglib2.0-dev gettext pkg-config ragel libxi-dev \
 	libfontconfig-dev libzip-dev lib3mf-dev libharfbuzz-dev libxml2-dev \
-	qtbase5-dev libqscintilla2-qt5-dev libqt5opengl5-dev libqt5svg5-dev \
-	qtmultimedia5-dev libqt5multimedia5-plugins libtbb-dev \
-	python3-pip python3-venv libglew-dev freeglut3-dev \
-	&& apt-get clean
+	qtbase5-dev libqt5scintilla2-dev libqt5opengl5-dev libqt5svg5-dev \
+	qtmultimedia5-dev libqt5multimedia5-plugins \
+    libglew-dev python3-pip python3-venv \
+    libtbb-dev \
+    && apt-get clean
 
 FROM builder-deps as builder
 
 WORKDIR /openscad
 # If submodules/ was instead copied, as before, then each build they'd need to be re-fetched. A risk with this approach is a mismatch with contents on GitHub
-RUN echo "update" && git clone https://github.com/jbinvnt/openscad.git && cd openscad && git submodule update --init --recursive && mv submodules .. && cd .. && rm -r openscad/
-
+RUN git clone https://github.com/jbinvnt/openscad.git && cd openscad && git submodule update --init --recursive && mv submodules .. && mv libraries .. && cd .. && rm -r openscad/
 COPY openscad .
 
 ARG GITHUB_USER=openscad
@@ -47,7 +47,6 @@ ARG COMMIT=true
 RUN echo "Build type: ${BUILD_TYPE}"
 RUN mkdir -p /build-results
 WORKDIR build
-#--mount=type=cache,mode=0755,target=/openscad/build 
 RUN cmake .. \
 		-DCMAKE_INSTALL_PREFIX=/usr/local \
 		-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
@@ -67,21 +66,11 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	libboost-thread1.74.0 libboost-program-options1.74.0 libboost-filesystem1.74.0 \
 	libboost-regex1.74.0 libopencsg1 libmpfr6 libqscintilla2-qt5-15 \
 	libqt5multimedia5 libqt5concurrent5 libglu1-mesa \
-	libglew2.1 xvfb xauth gdb xterm freeglut3-dev libtbb-dev \
+	libglew2.2 xvfb xauth gdb xterm \
+	libtbb-dev \
 	&& apt-get clean
 
 FROM runtime-base as runtime
-
-
-#RUN apt-get update && apt-get install -y --no-install-recommends \
-#        libglvnd0  \
-#        libgl1 \
-#        libglx0 \
-#        libegl1  \
-#        libgles2 && \
-#    rm -rf /var/lib/apt/lists/*
-#ENV LIBGL_ALWAYS_INDIRECT=1
-#RUN apt-get update && apt-get install -y --no-install-recommends mesa-utils libgl1-mesa-glx
 
 RUN mkdir -p /root/.local/share/OpenSCAD/backups
 
