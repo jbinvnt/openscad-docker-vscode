@@ -31,7 +31,7 @@ FROM builder-deps as builder
 
 WORKDIR /openscad
 # If submodules/ was instead copied, as before, then each build they'd need to be re-fetched. A risk with this approach is a mismatch with contents on GitHub
-RUN git clone https://github.com/jbinvnt/openscad.git && cd openscad && git submodule update --init --recursive && mv submodules .. && cd .. && rm -r openscad/
+RUN echo "update" && git clone https://github.com/jbinvnt/openscad.git && cd openscad && git submodule update --init --recursive && mv submodules .. && cd .. && rm -r openscad/
 
 COPY openscad .
 
@@ -47,7 +47,8 @@ ARG COMMIT=true
 RUN echo "Build type: ${BUILD_TYPE}"
 RUN mkdir -p /build-results
 WORKDIR build
-RUN --mount=type=cache,mode=0755,target=/openscad/build cmake .. \
+#--mount=type=cache,mode=0755,target=/openscad/build 
+RUN cmake .. \
 		-DCMAKE_INSTALL_PREFIX=/usr/local \
 		-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
 		-DEXPERIMENTAL=${SNAPSHOT} \
@@ -70,6 +71,17 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	&& apt-get clean
 
 FROM runtime-base as runtime
+
+
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#        libglvnd0  \
+#        libgl1 \
+#        libglx0 \
+#        libegl1  \
+#        libgles2 && \
+#    rm -rf /var/lib/apt/lists/*
+#ENV LIBGL_ALWAYS_INDIRECT=1
+#RUN apt-get update && apt-get install -y --no-install-recommends mesa-utils libgl1-mesa-glx
 
 RUN mkdir -p /root/.local/share/OpenSCAD/backups
 

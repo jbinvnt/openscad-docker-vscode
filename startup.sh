@@ -6,5 +6,5 @@ if [ -n "$VSCODE_DRIVEN" ]; then
     #sleep infinity # Prevents the container from stopping, but this is not necessary if tail -f is running.
 else
     echo "Container start: launching OpenSCAD"
-    /openscad/build/openscad --debug=all
+    QT_QUICK_BACKEND=software /openscad/build/openscad --debug=all
 fi
