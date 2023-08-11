@@ -64,6 +64,43 @@
             }
         },
         {
+            "label": "docker-stop-build-only",
+            "command": "docker-compose",
+            "args": [
+                "stop" // using the down command will delete the logs
+            ],
+            "type": "shell",
+            "isBackground": true,
+            "dependsOn": "docker-copy",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false,
+                "revealProblems": "onProblem"
+            }
+        },
+        {
+            "label": "docker-fail",
+            "command": "exit 1",
+            "type": "shell",
+            "dependsOn": "docker-stop-build-only",
+            "isBackground": false,
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false,
+                "revealProblems": "onProblem"
+            }
+        },
+        {
             "label": "docker-stop",
             "command": "docker-compose",
             "args": [

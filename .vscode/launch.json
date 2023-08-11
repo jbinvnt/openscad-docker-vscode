@@ -39,6 +39,46 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        { // Adapted from https://github.com/andyneff/hello-world-gdb/blob/master/.vscode/launch.json
+            "name": "Docker C++ Build Only",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/openscad/build/openscad",
+            "args": [
+                "--debug=all",
+                "1>>/openscad/output.log",
+                "2>>/openscad/output.log"
+            ],
+            "stopAtEntry": false,
+            "cwd": "/openscad",
+            "environment": [],
+            "externalConsole": false,
+            "preLaunchTask": "docker-fail",
+            "postDebugTask": "docker-logs",
+            "pipeTransport": {
+                "pipeCwd": "${workspaceRoot}",
+                "pipeProgram": "docker",
+                "pipeArgs": [
+                    "exec",
+                    "-i",
+                    "openscad_local_development",
+                    "sh",
+                    "-c"
+                ],
+                "debuggerPath": "stdbuf -i0 -o0 -e0 /usr/bin/gdb -ix /root/.gdbinit"
+            },
+            "sourceFileMap": {
+                    "/openscad/src":"${workspaceRoot}/openscad/src"
+            },
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
         }
     ]
 }
